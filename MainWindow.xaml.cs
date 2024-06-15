@@ -42,6 +42,9 @@ namespace WeatherApp
                 return;
             }
 
+            // Update the location label with the fetched city name
+            LocationLabel.Content = $"Location: {location.Item3}";
+
             string weatherUrl = $"{BaseUrl}?lat={location.Item1}&lon={location.Item2}&appid={ApiKey}&units=metric";
             string weatherData = await GetWeatherData(weatherUrl);
             if (!string.IsNullOrEmpty(weatherData))
@@ -65,7 +68,7 @@ namespace WeatherApp
             }
         }
 
-        private async Task<(double, double)> GetLocation()
+        private async Task<(double, double, string)> GetLocation()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -77,12 +80,13 @@ namespace WeatherApp
                     JObject locationJson = JObject.Parse(responseBody);
                     double lat = (double)locationJson["lat"];
                     double lon = (double)locationJson["lon"];
-                    return (lat, lon);
+                    string city = locationJson["city"].ToString();
+                    return (lat, lon, city);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Request failed: {ex.Message}");
-                    return (0, 0);
+                    return (0, 0, string.Empty);
                 }
             }
         }

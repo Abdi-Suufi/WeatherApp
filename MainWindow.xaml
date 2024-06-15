@@ -29,6 +29,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -53,9 +54,21 @@
             Height="100"
             Margin="523,21,177,19" />
 
+        <Label
+            Name="LocationLabel"
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Width="200"
+            Height="30"
+            Margin="300,0,300,10"
+            HorizontalContentAlignment="Center"
+            FontWeight="Bold"
+            Foreground="White" />
+
         <DataGrid
             Name="ForecastDataGrid"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="20"
