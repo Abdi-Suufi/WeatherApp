@@ -11,10 +11,10 @@ namespace WeatherApp
 {
     public partial class MainWindow : Window
     {
-        private const string ApiKey = "2645d3a34171a029a0ec6d4265529d9a";
-        private const string BaseUrl = "http://api.openweathermap.org/data/2.5/weather";
-        private const string ForecastUrl = "http://api.openweathermap.org/data/2.5/forecast";
-        private const string IconBaseUrl = "http://openweathermap.org/img/wn/";
+        private const string ApiKey = "0aac235af5e24577b2d130100241606";
+        private const string BaseUrl = "http://api.weatherapi.com/v1/current.json";
+        private const string ForecastUrl = "http://api.weatherapi.com/v1/forecast.json"; // Updated forecast URL
+        private const string IconBaseUrl = "http:"; // Fixing the icon URL base
         private const string GeoIpUrl = "http://ip-api.com/json/";
         private DispatcherTimer weatherTimer;
 
@@ -45,7 +45,7 @@ namespace WeatherApp
             // Update the location label with the fetched city name
             LocationLabel.Content = $"Location: {location.Item3}";
 
-            string weatherUrl = $"{BaseUrl}?lat={location.Item1}&lon={location.Item2}&appid={ApiKey}&units=metric";
+            string weatherUrl = $"{BaseUrl}?key={ApiKey}&q={location.Item3}&aqi=yes";
             string weatherData = await GetWeatherData(weatherUrl);
             if (!string.IsNullOrEmpty(weatherData))
             {
@@ -56,7 +56,7 @@ namespace WeatherApp
                 MessageBox.Show("Error fetching weather data.");
             }
 
-            string forecastUrl = $"{ForecastUrl}?lat={location.Item1}&lon={location.Item2}&appid={ApiKey}&units=metric";
+            string forecastUrl = $"{ForecastUrl}?key={ApiKey}&q={location.Item3}&days=7&aqi=yes";
             string forecastData = await GetWeatherData(forecastUrl);
             if (!string.IsNullOrEmpty(forecastData))
             {
@@ -113,10 +113,10 @@ namespace WeatherApp
         private void DisplayWeather(string weatherData)
         {
             JObject weatherJson = JObject.Parse(weatherData);
-            string description = weatherJson["weather"][0]["description"].ToString();
-            string temperature = weatherJson["main"]["temp"].ToString();
-            string iconCode = weatherJson["weather"][0]["icon"].ToString();
-            string iconUrl = $"{IconBaseUrl}{iconCode}@2x.png";
+            string description = weatherJson["current"]["condition"]["text"].ToString();
+            string temperature = weatherJson["current"]["temp_c"].ToString();
+            string iconCode = weatherJson["current"]["condition"]["icon"].ToString();
+            string iconUrl = $"{IconBaseUrl}{iconCode}"; // Update icon URL to include full path
 
             WeatherLabel.Content = $"Weather: {description}\nTemperature: {temperature}°C";
             WeatherIcon.Source = new BitmapImage(new Uri(iconUrl));
@@ -125,16 +125,16 @@ namespace WeatherApp
         private void DisplayForecast(string forecastData)
         {
             JObject forecastJson = JObject.Parse(forecastData);
-            var forecastList = forecastJson["list"];
+            var forecastList = forecastJson["forecast"]["forecastday"];
             var forecastTable = new List<WeatherForecast>();
 
             foreach (var forecast in forecastList)
             {
-                string dateTime = forecast["dt_txt"].ToString();
-                string temp = forecast["main"]["temp"].ToString();
-                string description = forecast["weather"][0]["description"].ToString();
-                string iconCode = forecast["weather"][0]["icon"].ToString();
-                string iconUrl = $"{IconBaseUrl}{iconCode}@2x.png";
+                string dateTime = forecast["date"].ToString();
+                string temp = forecast["day"]["avgtemp_c"].ToString();
+                string description = forecast["day"]["condition"]["text"].ToString();
+                string iconCode = forecast["day"]["condition"]["icon"].ToString();
+                string iconUrl = $"{IconBaseUrl}{iconCode}"; // Update icon URL to include full path
 
                 forecastTable.Add(new WeatherForecast
                 {
