@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Newtonsoft.Json.Linq;
@@ -19,6 +20,7 @@ namespace WeatherApp
         private const string GeoIpUrl = "http://ip-api.com/json/";
         private DispatcherTimer weatherTimer;
         private List<HourlyForecast> hourlyForecasts = new List<HourlyForecast>();
+        private List<WeatherForecast> dailyForecasts = new List<WeatherForecast>();
 
         public MainWindow()
         {
@@ -45,7 +47,7 @@ namespace WeatherApp
             }
 
             // Update the location label with the fetched city name
-            LocationLabel.Content = $"Location: {location.Item3}";
+            LocationLabel.Content = $"{location.Item3}";
 
             string weatherUrl = $"{BaseUrl}?key={ApiKey}&q={location.Item3}&aqi=yes";
             string weatherData = await GetWeatherData(weatherUrl);
@@ -69,6 +71,9 @@ namespace WeatherApp
             {
                 MessageBox.Show("Error fetching weather forecast data.");
             }
+
+            // Set the forecast title
+            ForecastTitleLabel.Content = $"7 Day Forecast";
         }
 
         private async Task<(double, double, string)> GetLocation()
@@ -128,8 +133,8 @@ namespace WeatherApp
         private void DisplayForecast(string forecastData)
         {
             JObject forecastJson = JObject.Parse(forecastData);
+            dailyForecasts.Clear();
             var forecastList = forecastJson["forecast"]["forecastday"];
-            var forecastTable = new List<WeatherForecast>();
 
             foreach (var forecast in forecastList)
             {
@@ -139,7 +144,7 @@ namespace WeatherApp
                 string iconCode = forecast["day"]["condition"]["icon"].ToString();
                 string iconUrl = $"{IconBaseUrl}{iconCode}";
 
-                forecastTable.Add(new WeatherForecast
+                dailyForecasts.Add(new WeatherForecast
                 {
                     DateTime = dateTime,
                     Temperature = $"{temp} °C",
@@ -148,7 +153,7 @@ namespace WeatherApp
                 });
             }
 
-            ForecastDataGrid.ItemsSource = forecastTable;
+            UpdateForecastWeatherPanel();
         }
 
         private void DisplayHourlyForecast(string forecastData)
@@ -174,15 +179,107 @@ namespace WeatherApp
                 });
             }
 
-            HourlyDataGrid.ItemsSource = new List<HourlyForecast> { hourlyForecasts[0] };
+            UpdateHourlyWeatherPanel();
         }
 
-        private void HourlySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void UpdateHourlyWeatherPanel()
         {
-            int index = (int)e.NewValue;
-            if (index >= 0 && index < hourlyForecasts.Count)
+            HourlyWeatherPanel.Children.Clear();
+            foreach (var forecast in hourlyForecasts)
             {
-                HourlyDataGrid.ItemsSource = new List<HourlyForecast> { hourlyForecasts[index] };
+                var card = new Border
+                {
+                    Width = 100,
+                    Margin = new Thickness(5),
+                    Background = new SolidColorBrush(Colors.LightGray),
+                    CornerRadius = new CornerRadius(10),
+                    Child = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical,
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text = forecast.Time,
+                                FontSize = 16,
+                                FontWeight = FontWeights.Bold,
+                                TextAlignment = TextAlignment.Center,
+                                Margin = new Thickness(2)
+                            },
+                            new TextBlock
+                            {
+                                Text = forecast.Temperature,
+                                FontSize = 20,
+                                FontWeight = FontWeights.Bold,
+                                TextAlignment = TextAlignment.Center
+                            },
+                            new Image
+                            {
+                                Source = new BitmapImage(new Uri(forecast.IconUrl)),
+                                Width = 50,
+                                Height = 50,
+                                Margin = new Thickness(0, 5, 0, 5)
+                            },
+                            new TextBlock
+                            {
+                                Text = forecast.Description,
+                                FontSize = 11,
+                                TextAlignment = TextAlignment.Center,
+                            }
+                        }
+                    }
+                };
+                HourlyWeatherPanel.Children.Add(card);
+            }
+        }
+
+        private void UpdateForecastWeatherPanel()
+        {
+            ForecastWeatherPanel.Children.Clear();
+            foreach (var forecast in dailyForecasts)
+            {
+                var card = new Border
+                {
+                    Width = 100,
+                    Margin = new Thickness(5),
+                    Background = new SolidColorBrush(Colors.LightGray),
+                    CornerRadius = new CornerRadius(10),
+                    Child = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical,
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text = forecast.DateTime,
+                                FontSize = 16,
+                                FontWeight = FontWeights.Bold,
+                                TextAlignment = TextAlignment.Center
+                            },
+                            new TextBlock
+                            {
+                                Text = forecast.Temperature,
+                                FontSize = 20,
+                                FontWeight = FontWeights.Bold,
+                                TextAlignment = TextAlignment.Center
+                            },
+                            new Image
+                            {
+                                Source = new BitmapImage(new Uri(forecast.IconUrl)),
+                                Width = 50,
+                                Height = 50,
+                                Margin = new Thickness(0, 5, 0, 5)
+                            },
+                            new TextBlock
+                            {
+                                Text = forecast.Description,
+                                FontSize = 12,
+                                TextAlignment = TextAlignment.Center
+                            }
+                        }
+                    }
+                };
+                ForecastWeatherPanel.Children.Add(card);
             }
         }
 

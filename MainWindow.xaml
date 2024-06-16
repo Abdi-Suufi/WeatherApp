@@ -6,8 +6,8 @@
     xmlns:local="clr-namespace:WeatherApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Weather App"
-    Width="1000"
-    Height="700"
+    Width="790"
+    Height="650"
     mc:Ignorable="d">
 
     <Window.Resources>
@@ -31,6 +31,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -51,9 +53,8 @@
             Name="WeatherIcon"
             Grid.Row="0"
             Grid.Column="1"
-            Width="100"
             Height="100"
-            Margin="523,21,177,19" />
+            Margin="523,21,125,19" />
 
         <Label
             Name="LocationLabel"
@@ -65,106 +66,49 @@
             Margin="300,0,300,10"
             HorizontalContentAlignment="Center"
             FontWeight="Bold"
-            Foreground="White" />
+            Foreground="black" />
 
-        <!--  New section for hourly weather updates  -->
-        <Grid
+        <!--  Title for hourly weather updates  -->
+        <Label
             Grid.Row="2"
-            Grid.ColumnSpan="3"
-            Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Slider
-                Name="HourlySlider"
-                Margin="10"
-                IsSnapToTickEnabled="True"
-                Maximum="23"
-                Minimum="0"
-                TickFrequency="1"
-                ValueChanged="HourlySlider_ValueChanged" />
-
-            <DataGrid
-                Name="HourlyDataGrid"
-                Grid.Row="1"
-                Margin="10"
-                AlternatingRowBackground="LightGray"
-                AutoGenerateColumns="False"
-                ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
-                GridLinesVisibility="All"
-                HeadersVisibility="Column">
-
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="*"
-                        Binding="{Binding Time}"
-                        ElementStyle="{StaticResource DataGridCellTextStyle}"
-                        Header="Time" />
-                    <DataGridTextColumn
-                        Width="*"
-                        Binding="{Binding Temperature}"
-                        ElementStyle="{StaticResource DataGridCellTextStyle}"
-                        Header="Temperature" />
-                    <DataGridTextColumn
-                        Width="*"
-                        Binding="{Binding Description}"
-                        ElementStyle="{StaticResource DataGridCellTextStyle}"
-                        Header="Description" />
-                    <DataGridTemplateColumn Width="Auto" Header="Icon">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image
-                                    Width="50"
-                                    Height="50"
-                                    Source="{Binding IconUrl}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-
-        <DataGrid
-            Name="ForecastDataGrid"
-            Grid.Row="3"
             Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Margin="20"
-            AlternatingRowBackground="LightGray"
-            AutoGenerateColumns="False"
-            ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
-            GridLinesVisibility="All"
-            HeadersVisibility="Column">
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,10"
+            HorizontalAlignment="Center"
+            Content="Hourly Update"
+            FontSize="20"
+            FontWeight="Bold"
+            Foreground="black" />
 
-            <DataGrid.Columns>
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding DateTime}"
-                    ElementStyle="{StaticResource DataGridCellTextStyle}"
-                    Header="DateTime" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding Temperature}"
-                    ElementStyle="{StaticResource DataGridCellTextStyle}"
-                    Header="Temperature" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding Description}"
-                    ElementStyle="{StaticResource DataGridCellTextStyle}"
-                    Header="Description" />
-                <DataGridTemplateColumn Width="Auto" Header="Icon">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Image
-                                Width="50"
-                                Height="50"
-                                Source="{Binding IconUrl}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+        <!--  Section for hourly weather updates  -->
+        <ScrollViewer
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Disabled">
+            <StackPanel Name="HourlyWeatherPanel" Orientation="Horizontal" />
+        </ScrollViewer>
+
+        <!--  Title for forecast  -->
+        <Label
+            Name="ForecastTitleLabel"
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,10"
+            HorizontalAlignment="Center"
+            FontSize="20"
+            FontWeight="Bold"
+            Foreground="black" />
+
+        <!--  Section for forecast weather updates  -->
+        <ScrollViewer
+            Grid.Row="5"
+            Grid.ColumnSpan="3"
+            Height="150"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Disabled">
+            <StackPanel Name="ForecastWeatherPanel" Orientation="Horizontal" />
+        </ScrollViewer>
     </Grid>
 </Window>
