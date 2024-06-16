@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Newtonsoft.Json.Linq;
@@ -17,6 +18,7 @@ namespace WeatherApp
         private const string IconBaseUrl = "http:"; // Fixing the icon URL base
         private const string GeoIpUrl = "http://ip-api.com/json/";
         private DispatcherTimer weatherTimer;
+        private List<HourlyForecast> hourlyForecasts = new List<HourlyForecast>();
 
         public MainWindow()
         {
@@ -61,6 +63,7 @@ namespace WeatherApp
             if (!string.IsNullOrEmpty(forecastData))
             {
                 DisplayForecast(forecastData);
+                DisplayHourlyForecast(forecastData);
             }
             else
             {
@@ -116,7 +119,7 @@ namespace WeatherApp
             string description = weatherJson["current"]["condition"]["text"].ToString();
             string temperature = weatherJson["current"]["temp_c"].ToString();
             string iconCode = weatherJson["current"]["condition"]["icon"].ToString();
-            string iconUrl = $"{IconBaseUrl}{iconCode}"; // Update icon URL to include full path
+            string iconUrl = $"{IconBaseUrl}{iconCode}";
 
             WeatherLabel.Content = $"Weather: {description}\nTemperature: {temperature}°C";
             WeatherIcon.Source = new BitmapImage(new Uri(iconUrl));
@@ -134,7 +137,7 @@ namespace WeatherApp
                 string temp = forecast["day"]["avgtemp_c"].ToString();
                 string description = forecast["day"]["condition"]["text"].ToString();
                 string iconCode = forecast["day"]["condition"]["icon"].ToString();
-                string iconUrl = $"{IconBaseUrl}{iconCode}"; // Update icon URL to include full path
+                string iconUrl = $"{IconBaseUrl}{iconCode}";
 
                 forecastTable.Add(new WeatherForecast
                 {
@@ -148,9 +151,52 @@ namespace WeatherApp
             ForecastDataGrid.ItemsSource = forecastTable;
         }
 
+        private void DisplayHourlyForecast(string forecastData)
+        {
+            JObject forecastJson = JObject.Parse(forecastData);
+            hourlyForecasts.Clear();
+            var hourlyList = forecastJson["forecast"]["forecastday"][0]["hour"];
+
+            foreach (var hour in hourlyList)
+            {
+                string time = DateTime.Parse(hour["time"].ToString()).ToString("HH:mm");
+                string temp = hour["temp_c"].ToString();
+                string description = hour["condition"]["text"].ToString();
+                string iconCode = hour["condition"]["icon"].ToString();
+                string iconUrl = $"{IconBaseUrl}{iconCode}";
+
+                hourlyForecasts.Add(new HourlyForecast
+                {
+                    Time = time,
+                    Temperature = $"{temp} °C",
+                    Description = description,
+                    IconUrl = iconUrl
+                });
+            }
+
+            HourlyDataGrid.ItemsSource = new List<HourlyForecast> { hourlyForecasts[0] };
+        }
+
+        private void HourlySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int index = (int)e.NewValue;
+            if (index >= 0 && index < hourlyForecasts.Count)
+            {
+                HourlyDataGrid.ItemsSource = new List<HourlyForecast> { hourlyForecasts[index] };
+            }
+        }
+
         public class WeatherForecast
         {
             public string DateTime { get; set; }
+            public string Temperature { get; set; }
+            public string Description { get; set; }
+            public string IconUrl { get; set; }
+        }
+
+        public class HourlyForecast
+        {
+            public string Time { get; set; }
             public string Temperature { get; set; }
             public string Description { get; set; }
             public string IconUrl { get; set; }

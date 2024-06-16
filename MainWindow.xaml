@@ -6,8 +6,8 @@
     xmlns:local="clr-namespace:WeatherApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Weather App"
-    Width="800"
-    Height="600"
+    Width="1000"
+    Height="700"
     mc:Ignorable="d">
 
     <Window.Resources>
@@ -28,6 +28,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -66,9 +67,68 @@
             FontWeight="Bold"
             Foreground="White" />
 
+        <!--  New section for hourly weather updates  -->
+        <Grid
+            Grid.Row="2"
+            Grid.ColumnSpan="3"
+            Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Slider
+                Name="HourlySlider"
+                Margin="10"
+                IsSnapToTickEnabled="True"
+                Maximum="23"
+                Minimum="0"
+                TickFrequency="1"
+                ValueChanged="HourlySlider_ValueChanged" />
+
+            <DataGrid
+                Name="HourlyDataGrid"
+                Grid.Row="1"
+                Margin="10"
+                AlternatingRowBackground="LightGray"
+                AutoGenerateColumns="False"
+                ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                GridLinesVisibility="All"
+                HeadersVisibility="Column">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Time}"
+                        ElementStyle="{StaticResource DataGridCellTextStyle}"
+                        Header="Time" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Temperature}"
+                        ElementStyle="{StaticResource DataGridCellTextStyle}"
+                        Header="Temperature" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Description}"
+                        ElementStyle="{StaticResource DataGridCellTextStyle}"
+                        Header="Description" />
+                    <DataGridTemplateColumn Width="Auto" Header="Icon">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Width="50"
+                                    Height="50"
+                                    Source="{Binding IconUrl}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
         <DataGrid
             Name="ForecastDataGrid"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="20"
