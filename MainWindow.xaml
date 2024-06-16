@@ -58,13 +58,11 @@
 
         <Label
             Name="LocationLabel"
-            Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            Width="200"
-            Height="30"
-            Margin="300,0,300,10"
+            Margin="0,10,580,82"
             HorizontalContentAlignment="Center"
+            FontSize="40px"
             FontWeight="Bold"
             Foreground="black" />
 
