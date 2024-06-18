@@ -32,7 +32,7 @@ namespace WeatherApp
             weatherTimer.Start();
         }
 
-        private async void WeatherTimer_Tick(object sender, EventArgs e)
+        private async void WeatherTimer_Tick(object? sender, EventArgs e)
         {
             await FetchWeatherData();
         }
@@ -47,7 +47,7 @@ namespace WeatherApp
             }
 
             // Update the location label with the fetched city name
-            LocationLabel.Content = $"{location.Item3}";
+            LocationLabel.Text = $"{location.Item3}";
 
             string weatherUrl = $"{BaseUrl}?key={ApiKey}&q={location.Item3}&aqi=yes";
             string weatherData = await GetWeatherData(weatherUrl);
@@ -73,7 +73,7 @@ namespace WeatherApp
             }
 
             // Set the forecast title
-            ForecastTitleLabel.Content = $"7 Day Forecast";
+            ForecastTitleLabel.Text = $"7 Day Forecast";
         }
 
         private async Task<(double, double, string)> GetLocation()
@@ -126,7 +126,7 @@ namespace WeatherApp
             string iconCode = weatherJson["current"]["condition"]["icon"].ToString();
             string iconUrl = $"{IconBaseUrl}{iconCode}";
 
-            WeatherLabel.Content = $"Weather: {description}\nTemperature: {temperature}°C";
+            WeatherLabel.Text = $"Weather: {description}\nTemperature: {temperature}°C";
             WeatherIcon.Source = new BitmapImage(new Uri(iconUrl));
         }
 
